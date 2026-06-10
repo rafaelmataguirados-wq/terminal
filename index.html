@@ -1,15 +1,295 @@
-{
-  "name": "Binance Terminal",
-  "short_name": "BinanceApp",
-  "start_url": "index.html",
-  "display": "standalone",
-  "background_color": "#12161a",
-  "theme_color": "#f3ba2f",
-  "icons": [
-    {
-      "src": "https://flaticon.com",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
-}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Motor de Patrones Enterprise - Binance</title>
+    
+    <!-- Cargar PyScript para ejecutar Python en el navegador -->
+    <link rel="stylesheet" href="https://pyscript.net" />
+    <script type="module" src="https://pyscript.net"></script>
+
+    <!-- Librería Oficial de Gráficos de TradingView -->
+    <script src="https://unpkg.com"></script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #12161a;
+            color: #e9ecef;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            background-color: #1e2329;
+            border-radius: 8px;
+            padding: 30px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #f3ba2f; 
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        h3 {
+            color: #f3ba2f;
+            font-size: 16px;
+            border-bottom: 1px solid #474d57;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .form-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #aeaeae;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #474d57;
+            background-color: #2b3139;
+            color: white;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            background-color: #f3ba2f;
+            color: #12161a;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #dca326;
+        }
+        #chart-container {
+            width: 100%;
+            height: 350px;
+            margin-top: 20px;
+            background-color: #161a1e;
+            border: 1px solid #474d57;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        #output {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #12161a;
+            border-left: 4px solid #f3ba2f;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            font-family: 'Courier New', Courier, monospace;
+            min-height: 120px;
+        }
+    </style>
+
+    <py-config>
+        packages = ["pandas", "numpy", "pyodide-http"]
+    </py-config>
+</head>
+<body>
+
+<div class="container">
+    <h1>📊 Terminal de Patrones y Co-Trading Profesional</h1>
+    
+    <h3>🔍 Configuración del Escáner</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="activo">Activos (Multi-Scan):</label>
+            <input type="text" id="activo" value="BTCUSDT, ETHUSDT, SOLUSDT">
+        </div>
+        <div class="form-group">
+            <label for="temporalidad">Temporalidad Local:</label>
+            <select id="temporalidad">
+                <option value="1m">1 minuto</option>
+                <option value="5m">5 minutos</option>
+                <option value="15m" selected>15 minutos</option>
+                <option value="1h">1 hora</option>
+                <option value="4h">4 horas</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label for="limite">Velas de Historial:</label>
+            <input type="number" id="limite" value="100" max="1000" min="10">
+        </div>
+        <div class="form-group">
+            <label for="patron-tipo">Algoritmo de Patrón:</label>
+            <select id="patron-tipo">
+                <option value="original" selected>Vela Verde Fuerte (>70% Cuerpo)</option>
+                <option value="envolvente">Vela Envolvente Alcista</option>
+            </select>
+        </div>
+    </div>
+
+    <h3>🤖 Gestión de Riesgo y Filtro Macrotendencia</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="winrate-minimo">Acierto Mínimo Requerido (%):</label>
+            <input type="number" id="winrate-minimo" value="60" max="100" min="1">
+        </div>
+        <div class="form-group">
+            <label for="capital">Monto por Operación (USDT):</label>
+            <input type="number" id="capital" value="100" min="1">
+        </div>
+    </div>
+
+    <h3>🔐 Conexión Segura de Órdenes API (Opcional)</h3>
+    <div class="form-row">
+        <div class="form-group">
+            <label for="binance-key">Binance API Key:</label>
+            <input type="password" id="binance-key" placeholder="Entrada oculta protegida">
+        </div>
+        <div class="form-group">
+            <label for="binance-secret">Binance Secret Key:</label>
+            <input type="password" id="binance-secret" placeholder="Entrada oculta protegida">
+        </div>
+    </div>
+
+    <button id="btn-calcular" py-click="iniciar_sistema">Ejecutar Escáner Global + Gráfico Dinámico</button>
+
+    <div id="chart-container"></div>
+    <div id="output">Consola de operaciones lista...</div>
+</div>
+
+<script type="py">
+import pandas as pd
+import numpy as np
+import requests
+import json
+from js import document, LightweightCharts
+
+# Forzar a requests a usar el motor HTTP del navegador mediante pyodide
+import pyodide_http
+pyodide_http.patch_all()
+
+def obtener_datos_binance(simbolo, intervalo, limite):
+    url = f"https://binance.com{simbolo.strip()}&interval={intervalo}&limit={limite}"
+    respuesta = requests.get(url)
+    if respuesta.status_code == 200:
+        datos = respuesta.json()
+        df = pd.DataFrame(datos, columns=[
+            'time', 'open', 'high', 'low', 'close', 'volume', 
+            'close_time', 'q_volume', 'trades', 'taker_base', 'taker_quote', 'ignore'
+        ])
+        df['time'] = df['time'] // 1000
+        df['open'] = df['open'].astype(float)
+        df['high'] = df['high'].astype(float)
+        df['low'] = df['low'].astype(float)
+        df['close'] = df['close'].astype(float)
+        return df
+    return None
+
+def escanear_patrones(df, tipo_patron):
+    alertas = []
+    for i in range(1, len(df)):
+        open_p = df['open'].iloc[i]
+        high_p = df['high'].iloc[i]
+        low_p = df['low'].iloc[i]
+        close_p = df['close'].iloc[i]
+        
+        rango_total = high_p - low_p
+        if rango_total == 0: continue
+        
+        cuerpo = abs(close_p - open_p)
+        
+        if tipo_patron == "original":
+            if close_p > open_p and (cuerpo / rango_total) >= 0.70:
+                alertas.append(i)
+                
+        elif tipo_patron == "envolvente":
+            open_ant = df['open'].iloc[i-1]
+            close_ant = df['close'].iloc[i-1]
+            if close_ant < open_ant and close_p > open_p and close_p > open_ant and open_p < close_ant:
+                alertas.append(i)
+    return alertas
+
+def renderizar_grafico(df):
+    contenedor = document.getElementById("chart-container")
+    contenedor.innerHTML = ""
+    
+    chart = LightweightCharts.createChart(contenedor, {
+        "width": contenedor.clientWidth,
+        "height": 350,
+        "layout": {"backgroundColor": "#161a1e", "textColor": "#d1d4dc"},
+        "grid": {
+            "vertLines": {"color": "rgba(42, 46, 57, 0.2)"},
+            "horzLines": {"color": "rgba(42, 46, 57, 0.2)"}
+        },
+        "timeScale": {"timeVisible": True}
+    })
+    
+    candle_series = chart.addCandlestickSeries({
+        "upColor": "#26a69a", "downColor": "#ef5350",
+        "borderDownColor": "#ef5350", "borderUpColor": "#26a69a",
+        "wickDownColor": "#ef5350", "wickUpColor": "#26a69a"
+    })
+    
+    registros = []
+    for _, row in df.iterrows():
+        registros.append({
+            "time": int(row['time']),
+            "open": float(row['open']),
+            "high": float(row['high']),
+            "low": float(row['low']),
+            "close": float(row['close'])
+        })
+        
+    from pyodide.ffi import to_js
+    candle_series.setData(to_js(registros))
+
+def iniciar_sistema(event):
+    consola = document.getElementById("output")
+    consola.innerHTML = "Iniciando escaneo del mercado..."
+    
+    activos_input = document.getElementById("activo").value
+    temporalidad = document.getElementById("temporalidad").value
+    limite = document.getElementById("limite").value
+    algoritmo = document.getElementById("patron-tipo").value
+    
+    lista_activos = activos_input.split(",")
+    primer_df = None
+    resumen_logs = "--- RESULTADOS DEL ESCANEO ---\n"
+    
+    for activo in lista_activos:
+        activo = activo.strip().upper()
+        if not activo: continue
+        
+        df = obtener_datos_binance(activo, temporalidad, limite)
+        if df is not None:
+            if primer_df is None:
+                primer_df = df
+            
+            indices_patron = escanear_patrones(df, algoritmo)
+            if indices_patron:
+                resumen_logs += f"✅ {activo}: ¡Patrón detectado en la vela más reciente! ({len(indices_patron)} coincidencias históricas)\n"
+            else:
+                resumen_logs += f"❌ {activo}: Sin patrones detectados.\n"
+        else:
+  
