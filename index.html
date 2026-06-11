@@ -3,48 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal de Patrones Auto-Inteligente - Binance</title>
+    <title>Terminal Pro Alerta Temprana - Red & Black Edition</title>
     
     <!-- ENLACES OFICIALES ACTUALIZADOS DE PYSCRIPT -->
-    <link rel="stylesheet" href="https://pyscript.net/releases/2026.3.1/core.css">
-    <script type="module" src="https://pyscript.net/releases/2026.3.1/core.js"></script>
-
-    <!-- Librería Oficial de Gráficos de TradingView -->
-    <script src="https://unpkg.com"></script>
+    <link rel="stylesheet" href="https://pyscript.net">
+    <script type="module" src="https://pyscript.net"></script>
 
     <style>
+        :root {
+            --bg-principal: #0a0a0c;
+            --bg-tarjeta: #141416;
+            --rojo-neon: #ff3344;
+            --rojo-oscuro: #99111b;
+            --texto-claro: #f5f5f7;
+            --texto-mutado: #8a8a93;
+            --borde: #26262b;
+            /* Colores típicos de trading */
+            --trading-verde: #00b060;
+            --trading-rojo: #ff3b30;
+            --trading-amarillo: #ffcc00;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #12161a;
-            color: #e9ecef;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: var(--bg-principal);
+            color: var(--texto-claro);
             margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
         }
         .container {
-            background-color: #1e2329;
-            border-radius: 8px;
+            background-color: var(--bg-tarjeta);
+            border-radius: 12px;
             padding: 30px;
             width: 100%;
-            max-width: 800px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            max-width: 850px;
+            box-shadow: 0 8px 32px rgba(255, 51, 68, 0.08);
+            border: 1px solid var(--borde);
         }
         h1 {
-            color: #f3ba2f; 
-            font-size: 24px;
-            margin-bottom: 20px;
+            color: var(--rojo-neon); 
+            font-size: 26px;
+            margin-bottom: 25px;
             text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 800;
+            text-shadow: 0 0 10px rgba(255, 51, 68, 0.3);
         }
         h3 {
-            color: #f3ba2f;
-            font-size: 16px;
-            border-bottom: 1px solid #474d57;
-            padding-bottom: 5px;
-            margin-top: 25px;
-        }
-        .form-group {
-            margin-bottom: 15px;
+            color: var(--texto-claro);
+            font-size: 15px;
+            border-bottom: 2px solid var(--rojo-oscuro);
+            padding-bottom: 6px;
+            margin-top: 30px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .form-row {
             display: flex;
@@ -53,58 +68,73 @@
         }
         .form-row .form-group {
             flex: 1;
-            margin-bottom: 0;
         }
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #aeaeae;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--texto-mutated);
         }
         input, select {
             width: 100%;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px solid #474d57;
-            background-color: #2b3139;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid var(--borde);
+            background-color: #1c1c1f;
             color: white;
             box-sizing: border-box;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--rojo-neon);
+            box-shadow: 0 0 5px rgba(255, 51, 68, 0.4);
         }
         button {
             width: 100%;
-            background-color: #f3ba2f;
-            color: #12161a;
+            background-color: var(--rojo-neon);
+            color: white;
             border: none;
-            padding: 12px;
-            border-radius: 4px;
+            padding: 15px;
+            border-radius: 6px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
+            transition: all 0.2s ease-in-out;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(255, 51, 68, 0.2);
         }
         button:hover {
-            background-color: #dca326;
+            background-color: var(--rojo-oscuro);
+            transform: translateY(-1px);
         }
-        #chart-container {
-            width: 100%;
-            height: 350px;
-            margin-top: 20px;
-            background-color: #161a1e;
-            border: 1px solid #474d57;
-            border-radius: 4px;
-            overflow: hidden;
+        button:active {
+            transform: translateY(1px);
         }
         #output {
             margin-top: 25px;
-            padding: 15px;
-            background-color: #12161a;
-            border-left: 4px solid #f3ba2f;
-            border-radius: 4px;
+            padding: 18px;
+            background-color: #0d0d0f;
+            border-left: 4px solid var(--rojo-neon);
+            border-radius: 6px;
             white-space: pre-wrap;
-            font-family: 'Courier New', Courier, monospace;
-            min-height: 120px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            min-height: 150px;
+            max-height: 350px;
+            overflow-y: auto;
+            border: 1px solid var(--borde);
+            border-left: 4px solid var(--rojo-neon);
         }
+        /* Clases auxiliares para la consola de trading */
+        .txt-verde { color: var(--trading-verde) !important; }
+        .txt-rojo { color: var(--trading-rojo) !important; }
+        .txt-amarillo { color: var(--trading-amarillo) !important; }
     </style>
 
     <py-config>
@@ -114,33 +144,29 @@
 <body>
 
 <div class="container">
-    <h1>📊 Terminal de Patrones Auto-Inteligente</h1>
+    <h1>🚨 Terminal de Patrones Ultra-Filtro</h1>
     
-    <h3>🔍 Configuración del Escáner</h3>
+    <h3>🔍 Escáner Masivo Automático</h3>
     <div class="form-row">
         <div class="form-group">
-            <label for="activo">Activos (Multi-Scan):</label>
-            <input type="text" id="activo" value="BTCUSDT">
+            <label for="activo">Lista de Monedas (Separadas por comas para buscar en paralelo):</label>
+            <input type="text" id="activo" value="BTCUSDT, ETHUSDT, SOLUSDT, XRPUSDT, ADAUSDT, DOGEUSDT, LINKUSDT, BNBUSDT">
         </div>
+    </div>
+    
+    <div class="form-row">
         <div class="form-group">
             <label for="temporalidad">Temporalidad Local:</label>
             <select id="temporalidad">
                 <option value="1m">1 minuto</option>
-                <option value="5m">5 minutos</option>
-                <option value="15m" selected>15 minutos</option>
+                <option value="5m" selected>5 minutos (Recomendado)</option>
+                <option value="15m">15 minutos</option>
                 <option value="1h">1 hora</option>
                 <option value="4h">4 horas</option>
             </select>
         </div>
-    </div>
-
-    <div class="form-row">
         <div class="form-group">
-            <label for="limite">Velas de Historial:</label>
-            <input type="number" id="limite" value="300" max="1000" min="10">
-        </div>
-        <div class="form-group">
-            <label for="patron-tipo">Algoritmo Base de Vela:</label>
+            <label for="patron-tipo">Algoritmo de Detección:</label>
             <select id="patron-tipo">
                 <option value="original" selected>Vela de Fuerza Tradicional (&gt;70% Cuerpo)</option>
                 <option value="envolvente">Vela Envolvente Estándar</option>
@@ -148,51 +174,49 @@
         </div>
     </div>
 
-    <h3>🤖 Gestión de Riesgo Inteligente</h3>
     <div class="form-row">
         <div class="form-group">
-            <label for="winrate-minimo">Acierto Mínimo Requerido (%):</label>
-            <input type="number" id="winrate-minimo" value="70" max="100" min="1">
-        </div>
-        <div class="form-group">
-            <label for="modo-trabajo">Sistema de Ejecución:</label>
-            <select id="modo-trabajo">
-                <option value="manual" selected>Manual (Solo Escáner y Alertas)</option>
-                <option value="automatico">Automático (Bot Compra/Vende Solo)</option>
-            </select>
+            <label for="limite">Historial requerido para Filtros (Mín. 250 para EMA):</label>
+            <input type="number" id="limite" value="300" max="1000" min="250">
         </div>
     </div>
 
+    <h3>🤖 Filtros Avanzados de Alta Precisión (Winrate Max)</h3>
     <div class="form-row">
         <div class="form-group">
-            <label for="capital">Monto por Operación (USDT):</label>
+            <label for="modo-trabajo">Sistema de Ejecución:</label>
+            <select id="modo-trabajo">
+                <option value="manual" selected>Manual (Scanner + Alertas de Inmediato)</option>
+                <option value="automatico">Automático (Ejecución Instantánea por API)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="capital">Monto por Entrada (USDT):</label>
             <input type="number" id="capital" value="10" min="1">
         </div>
     </div>
 
-    <h3>🔐 Conexión Segura de Órdenes API (Opcional)</h3>
+    <h3>🔐 Credenciales de Enrutamiento API (Opcional)</h3>
     <div class="form-row">
         <div class="form-group">
             <label for="binance-key">Binance API Key:</label>
-            <input type="password" id="binance-key" placeholder="Entrada oculta protegida">
+            <input type="password" id="binance-key" placeholder="Entrada cifrada en navegador">
         </div>
         <div class="form-group">
             <label for="binance-secret">Binance Secret Key:</label>
-            <input type="password" id="binance-secret" placeholder="Entrada oculta protegida">
+            <input type="password" id="binance-secret" placeholder="Entrada cifrada en navegador">
         </div>
     </div>
 
-    <button id="btn-calcular" py-click="iniciar_sistema">Ejecutar Escáner Inteligente Unificado</button>
+    <button id="btn-calcular" py-click="iniciar_sistema">Iniciar Escaneo Cruzado Inteligente</button>
 
-    <div id="chart-container"></div>
-    <div id="output">Consola de operaciones lista...</div>
+    <div id="output">Consola de operaciones en espera... Pulsar el botón para barrer el mercado.</div>
 </div>
 
 <script type="py">
 import pandas as pd
 import numpy as np
 import requests
-import json
 import ccxt
 from pyscript import document
 
@@ -201,80 +225,56 @@ pyodide_http.patch_all()
 
 def obtener_datos_binance(simbolo, intervalo, limite):
     try:
-        url = f"https://binance.com{simbolo.strip()}&interval={intervalo}&limit={limite}"
+        url = f"https://binance.com{simbolo.strip().upper()}&interval={intervalo}&limit={limite}"
         respuesta = requests.get(url)
         if respuesta.status_code == 200:
             datos = respuesta.json()
-            df = pd.DataFrame(datos, columns=[
-                'time', 'open', 'high', 'low', 'close', 'volume', 
-                'close_time', 'q_volume', 'trades', 'taker_base', 'taker_quote', 'ignore'
-            ])
+            df = pd.DataFrame(datos).iloc[:, :6]
+            df.columns = ['time', 'open', 'high', 'low', 'close', 'volume']
             df['time'] = df['time'] // 1000
-            df['open'] = df['open'].astype(float)
-            df['high'] = df['high'].astype(float)
-            df['low'] = df['low'].astype(float)
-            df['close'] = df['close'].astype(float)
-            df['volume'] = df['volume'].astype(float)
+            df[['open', 'high', 'low', 'close', 'volume']] = df[['open', 'high', 'low', 'close', 'volume']].astype(float)
             return df
     except:
         return None
 
-def escanear_motor_inteligente(df, tipo_patron, winrate_minimo):
-    compras = []
-    ventas = []
+def escanear_con_super_filtros(df, tipo_patron):
+    if len(df) < 201: 
+        return "Ninguno", 0.0, "Falta historial matemático"
     
+    # ESTRATEGIA 1: Cálculo de Tendencia Institucional (EMA 200)
     df['EMA_200'] = df['close'].ewm(span=200, adjust=False).mean()
-    df_btc = obtener_datos_binance("BTCUSDT", "15m", len(df))
-    if df_btc is not None:
-        df_btc['EMA_200'] = df_btc['close'].ewm(span=200, adjust=False).mean()
-
-    for i in range(20, len(df)):
-        open_p = df['open'].iloc[i]
-        high_p = df['high'].iloc[i]
-        low_p = df['low'].iloc[i]
-        close_p = df['close'].iloc[i]
-        ema_actual = df['EMA_200'].iloc[i]
-        
-        rango_total = high_p - low_p
-        if rango_total == 0: continue
-        cuerpo = abs(close_p - open_p)
-        
-        v_verde = False
-        v_roja = False
-        
-        if tipo_patron == "original":
-            v_verde = close_p > open_p and (cuerpo / rango_total) >= 0.70
-            v_roja = close_p < open_p and (cuerpo / rango_total) >= 0.70
-        elif tipo_patron == "envolvente":
-            open_ant = df['open'].iloc[i-1]
-            close_ant = df['close'].iloc[i-1]
-            v_verde = close_ant < open_ant and close_p > open_p and close_p > open_ant and open_p < close_ant
-            v_roja = close_ant > open_ant and close_p < open_p and close_p < open_ant and open_p > close_ant
-
-        # SIEMPRE BIDIRECCIONAL EN TODOS LOS NIVELES
-        if winrate_minimo < 65:
-            if v_verde: compras.append(i)
-            elif v_roja: ventas.append(i)
+    
+    # ESTRATEGIA 2: Filtro de Volumen Profesional (Promedio de últimas 20 velas)
+    df['Vol_MA20'] = df['volume'].rolling(window=20).mean()
+    
+    # Valores de la última vela completamente cerrada (Índice -2)
+    open_p = df['open'].iloc[-2]
+    high_p = df['high'].iloc[-2]
+    low_p = df['low'].iloc[-2]
+    close_p = df['close'].iloc[-2]
+    vol_p = df['volume'].iloc[-2]
+    ema_p = df['EMA_200'].iloc[-2]
+    vol_ma_p = df['Vol_MA20'].iloc[-2]
+    
+    # Valores de la vela anterior (Índice -3) para patrones envolventes
+    open_ant = df['open'].iloc[-3]
+    close_ant = df['close'].iloc[-3]
+    
+    rango_total = high_p - low_p
+    if rango_total == 0: return "Ninguno", 0.0, "Sin rango"
+    cuerpo = abs(close_p - open_p)
+    
+    # Validación del Filtro de Volumen: El volumen de ruptura debe superar al promedio
+    volumen_confirmado = vol_p > vol_ma_p
+    
+    # Filtrado matemático de patrones
+    patron_detectado = "Ninguno"
+    
+    if tipo_patron == "original":
+        if close_p > open_p and (cuerpo / rango_total) >= 0.70:
+            patron_detectado = "COMPRA"
+        elif close_p < open_p and (cuerpo / rango_total) >= 0.70:
+            patron_detectado = "VENTA"
             
-        elif 65 <= winrate_minimo <= 75:
-            vol_prom = df['volume'].iloc[i-20:i].mean()
-            if df['volume'].iloc[i] > vol_prom:
-                if v_verde and close_p > ema_actual: compras.append(i)
-                elif v_roja and close_p < ema_actual: ventas.append(i)
-                
-        elif winrate_minimo > 75:
-            vol_prom = df['volume'].iloc[i-20:i].mean()
-            if df_btc is not None and df['volume'].iloc[i] > (vol_prom * 1.2) and (cuerpo / rango_total) >= 0.75:
-                btc_alcista = df_btc['close'].iloc[i] > df_btc['EMA_200'].iloc[i]
-                if v_verde and close_p > ema_actual and btc_alcista: compras.append(i)
-                elif v_roja and close_p < ema_actual and not btc_alcista: ventas.append(i)
-                
-    return compras, ventas
-
-def renderizar_grafico(df):
-    contenedor = document.getElementById("chart-container")
-    contenedor.innerHTML = "" 
-    # Usar window nativo para llamar la librería de gráficos de TradingView
-    from js import window
-    chart = window.LightweightCharts.createChart(contenedor, {
-        "width": contenedor.clientWidth if contenedor.clientWidth > 0 else 700, "height": 350,
+    elif tipo_patron == "envolvente":
+        if close_p > open_p and close_ant < open_ant and close_p > open_ant and open_p < close_ant:
