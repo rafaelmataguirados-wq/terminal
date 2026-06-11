@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motor de Patrones Enterprise - Binance</title>
+    <title>Terminal de Patrones Auto-Inteligente - Binance</title>
     
     <!-- Cargar PyScript para ejecutar Python en el navegador -->
     <link rel="stylesheet" href="https://pyscript.net" />
@@ -108,25 +108,25 @@
     </style>
 
     <py-config>
-        packages = ["pandas", "numpy", "pyodide-http"]
+        packages = ["pandas", "numpy", "pyodide-http", "ccxt"]
     </py-config>
 </head>
 <body>
 
 <div class="container">
-    <h1>📊 Terminal de Patrones y Co-Trading Profesional</h1>
+    <h1>📊 Terminal de Patrones Auto-Inteligente</h1>
     
     <h3>🔍 Configuración del Escáner</h3>
     <div class="form-row">
         <div class="form-group">
             <label for="activo">Activos (Multi-Scan):</label>
-            <input type="text" id="activo" value="BTCUSDT, ETHUSDT, SOLUSDT">
+            <input type="text" id="activo" value="BTCUSDT">
         </div>
         <div class="form-group">
             <label for="temporalidad">Temporalidad Local:</label>
             <select id="temporalidad">
                 <option value="1m">1 minuto</option>
-                <option value="5m">5 minutos</option>
+                <option value="5m">5 minutes</option>
                 <option value="15m" selected>15 minutos</option>
                 <option value="1h">1 hora</option>
                 <option value="4h">4 horas</option>
@@ -137,26 +137,36 @@
     <div class="form-row">
         <div class="form-group">
             <label for="limite">Velas de Historial:</label>
-            <input type="number" id="limite" value="100" max="1000" min="10">
+            <input type="number" id="limite" value="300" max="1000" min="10">
         </div>
         <div class="form-group">
-            <label for="patron-tipo">Algoritmo de Patrón:</label>
+            <label for="patron-tipo">Algoritmo Base de Vela:</label>
             <select id="patron-tipo">
-                <option value="original" selected>Vela Verde Fuerte (>70% Cuerpo)</option>
-                <option value="envolvente">Vela Envolvente Alcista</option>
+                <option value="original" selected>Vela de Fuerza Tradicional (&gt;70% Cuerpo)</option>
+                <option value="envolvente">Vela Envolvente Estándar</option>
             </select>
         </div>
     </div>
 
-    <h3>🤖 Gestión de Riesgo y Filtro Macrotendencia</h3>
+    <h3>🤖 Gestión de Riesgo Inteligente</h3>
     <div class="form-row">
         <div class="form-group">
             <label for="winrate-minimo">Acierto Mínimo Requerido (%):</label>
-            <input type="number" id="winrate-minimo" value="60" max="100" min="1">
+            <input type="number" id="winrate-minimo" value="70" max="100" min="1">
         </div>
         <div class="form-group">
+            <label for="modo-trabajo">Sistema de Ejecución:</label>
+            <select id="modo-trabajo">
+                <option value="manual" selected>Manual (Solo Escáner y Alertas)</option>
+                <option value="automatico">Automático (Bot Compra/Vende Solo)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
             <label for="capital">Monto por Operación (USDT):</label>
-            <input type="number" id="capital" value="100" min="1">
+            <input type="number" id="capital" value="10" min="1">
         </div>
     </div>
 
@@ -172,7 +182,7 @@
         </div>
     </div>
 
-    <button id="btn-calcular" py-click="iniciar_sistema">Ejecutar Escáner Global + Gráfico Dinámico</button>
+    <button id="btn-calcular" py-click="iniciar_sistema">Ejecutar Escáner Inteligente Unificado</button>
 
     <div id="chart-container"></div>
     <div id="output">Consola de operaciones lista...</div>
@@ -183,113 +193,82 @@ import pandas as pd
 import numpy as np
 import requests
 import json
+import ccxt
 from js import document, LightweightCharts
 
-# Forzar a requests a usar el motor HTTP del navegador mediante pyodide
 import pyodide_http
 pyodide_http.patch_all()
 
 def obtener_datos_binance(simbolo, intervalo, limite):
-    url = f"https://binance.com{simbolo.strip()}&interval={intervalo}&limit={limite}"
-    respuesta = requests.get(url)
-    if respuesta.status_code == 200:
-        datos = respuesta.json()
-        df = pd.DataFrame(datos, columns=[
-            'time', 'open', 'high', 'low', 'close', 'volume', 
-            'close_time', 'q_volume', 'trades', 'taker_base', 'taker_quote', 'ignore'
-        ])
-        df['time'] = df['time'] // 1000
-        df['open'] = df['open'].astype(float)
-        df['high'] = df['high'].astype(float)
-        df['low'] = df['low'].astype(float)
-        df['close'] = df['close'].astype(float)
-        return df
-    return None
+    try:
+        url = f"https://binance.com{simbolo.strip()}&interval={intervalo}&limit={limite}"
+        respuesta = requests.get(url)
+        if respuesta.status_code == 200:
+            datos = respuesta.json()
+            df = pd.DataFrame(datos, columns=[
+                'time', 'open', 'high', 'low', 'close', 'volume', 
+                'close_time', 'q_volume', 'trades', 'taker_base', 'taker_quote', 'ignore'
+            ])
+            df['time'] = df['time'] // 1000
+            df['open'] = df['open'].astype(float)
+            df['high'] = df['high'].astype(float)
+            df['low'] = df['low'].astype(float)
+            df['close'] = df['close'].astype(float)
+            df['volume'] = df['volume'].astype(float)
+            return df
+    except:
+        return None
 
-def escanear_patrones(df, tipo_patron):
-    alertas = []
-    for i in range(1, len(df)):
+def escanear_motor_inteligente(df, tipo_patron, winrate_minimo):
+    compras = []
+    ventas = []
+    
+    # Indicadores base para análisis de tendencias de fondo
+    df['EMA_200'] = df['close'].ewm(span=200, adjust=False).mean()
+    df_btc = obtener_datos_binance("BTCUSDT", "15m", len(df))
+    if df_btc is not None:
+        df_btc['EMA_200'] = df_btc['close'].ewm(span=200, adjust=False).mean()
+
+    for i in range(20, len(df)):
         open_p = df['open'].iloc[i]
         high_p = df['high'].iloc[i]
         low_p = df['low'].iloc[i]
         close_p = df['close'].iloc[i]
+        ema_actual = df['EMA_200'].iloc[i]
         
         rango_total = high_p - low_p
         if rango_total == 0: continue
-        
         cuerpo = abs(close_p - open_p)
         
+        # 1. DETECCIÓN BASE SIEMPRE BIDIRECCIONAL (Identifica subidas verdes y bajadas rojas)
+        v_verde = False
+        v_roja = False
+        
         if tipo_patron == "original":
-            if close_p > open_p and (cuerpo / rango_total) >= 0.70:
-                alertas.append(i)
-                
+            v_verde = close_p > open_p and (cuerpo / rango_total) >= 0.70
+            v_roja = close_p < open_p and (cuerpo / rango_total) >= 0.70
         elif tipo_patron == "envolvente":
             open_ant = df['open'].iloc[i-1]
             close_ant = df['close'].iloc[i-1]
-            if close_ant < open_ant and close_p > open_p and close_p > open_ant and open_p < close_ant:
-                alertas.append(i)
-    return alertas
+            # Verde envuelve a roja (Alza) / Roja envuelve a verde (Baja)
+            v_verde = close_ant < open_ant and close_p > open_p and close_p > open_ant and open_p < close_ant
+            v_roja = close_ant > open_ant and close_p < open_p and close_p < open_ant and open_p > close_ant
 
-def renderizar_grafico(df):
-    contenedor = document.getElementById("chart-container")
-    contenedor.innerHTML = ""
-    
-    chart = LightweightCharts.createChart(contenedor, {
-        "width": contenedor.clientWidth,
-        "height": 350,
-        "layout": {"backgroundColor": "#161a1e", "textColor": "#d1d4dc"},
-        "grid": {
-            "vertLines": {"color": "rgba(42, 46, 57, 0.2)"},
-            "horzLines": {"color": "rgba(42, 46, 57, 0.2)"}
-        },
-        "timeScale": {"timeVisible": True}
-    })
-    
-    candle_series = chart.addCandlestickSeries({
-        "upColor": "#26a69a", "downColor": "#ef5350",
-        "borderDownColor": "#ef5350", "borderUpColor": "#26a69a",
-        "wickDownColor": "#ef5350", "wickUpColor": "#26a69a"
-    })
-    
-    registros = []
-    for _, row in df.iterrows():
-        registros.append({
-            "time": int(row['time']),
-            "open": float(row['open']),
-            "high": float(row['high']),
-            "low": float(row['low']),
-            "close": float(row['close'])
-        })
-        
-    from pyodide.ffi import to_js
-    candle_series.setData(to_js(registros))
-
-def iniciar_sistema(event):
-    consola = document.getElementById("output")
-    consola.innerHTML = "Iniciando escaneo del mercado..."
-    
-    activos_input = document.getElementById("activo").value
-    temporalidad = document.getElementById("temporalidad").value
-    limite = document.getElementById("limite").value
-    algoritmo = document.getElementById("patron-tipo").value
-    
-    lista_activos = activos_input.split(",")
-    primer_df = None
-    resumen_logs = "--- RESULTADOS DEL ESCANEO ---\n"
-    
-    for activo in lista_activos:
-        activo = activo.strip().upper()
-        if not activo: continue
-        
-        df = obtener_datos_binance(activo, temporalidad, limite)
-        if df is not None:
-            if primer_df is None:
-                primer_df = df
+        # 2. FILTRADO INTELIGENTE SEGÚN EL PORCENTAJE DE EFECTIVIDAD EXIGIDO
+        if winrate_minimo < 65:
+            # Filtro básico bidireccional sin restricciones extra
+            if v_verde: compras.append(i)
+            elif v_roja: ventas.append(i)
             
-            indices_patron = escanear_patrones(df, algoritmo)
-            if indices_patron:
-                resumen_logs += f"✅ {activo}: ¡Patrón detectado en la vela más reciente! ({len(indices_patron)} coincidencias históricas)\n"
-            else:
-                resumen_logs += f"❌ {activo}: Sin patrones detectados.\n"
-        else:
-  
+        elif 65 <= winrate_minimo <= 75:
+            # Filtro intermedio: Agrega dirección de tendencia EMA200 y volumen promedio
+            vol_prom = df['volume'].iloc[i-20:i].mean()
+            if df['volume'].iloc[i] > vol_prom:
+                if v_verde and close_p > ema_actual: compras.append(i)
+                elif v_roja and close_p < ema_actual: ventas.append(i)
+                
+        elif winrate_minimo > 75:
+            # Filtro ultra-avanzado: Agrega correlación con Bitcoin y aumenta exigencia al 75%
+            vol_prom = df['volume'].iloc[i-20:i].mean()
+            if df_btc is not None and df['volume'].iloc[i] > (vol_prom * 1.2) and (cuerpo / rango_total) >= 0.75:
+                btc_alcista = df_btc['close'].iloc[i] > df_btc['EMA_200'].iloc[i]
