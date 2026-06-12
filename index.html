@@ -252,11 +252,22 @@
         let resultadosHtml = "";
 
         for (let simbolo of activos) {
+            if (!simbolo) continue;
             try {
-                // Conexión directa a la API pública y gratuita de Binance
-                const respuesta = await fetch(`https://binance.com{simbolo}&interval=${document.getElementById('temporalidad').value}&limit=3`);
-                if (!respuesta.ok) throw new Error();
+                const tempVal = document.getElementById('temporalidad').value;
+                const urlApi = `https://binance.com{simbolo}&interval=${tempVal}&limit=5`;
+                
+                const respuesta = await fetch(urlApi);
+                if (!respuesta.ok) {
+                    resultadosHtml += `<span class="down-signal">[ERROR] Error de conexión con el par ${simbolo}</span>\n`;
+                    continue;
+                }
+                
                 const velas = await respuesta.json();
+                if (!velas || velas.length === 0) {
+                    resultadosHtml += `<span class="down-signal">[ERROR] Datos vacíos para ${simbolo}</span>\n`;
+                    continue;
+                }
                 
                 const ultimaVela = velas[velas.length - 1];
                 const open = parseFloat(ultimaVela[1]);
@@ -268,7 +279,6 @@
                 const rangoTotal = high - low;
                 const esVerde = close > open;
                 
-                // Algoritmo de detección del patrón
                 let patronDetectado = false;
                 if (rangoTotal > 0 && (cuerpo / rangoTotal) >= 0.7) {
                     patronDetectado = true;
@@ -278,8 +288,3 @@
                     const tipoSeñal = esVerde ? "COMPRA (BULLISH)" : "VENTA (BEARISH)";
                     const claseSeñal = esVerde ? "up-signal" : "down-signal";
                     
-                    // Link de envío para WhatsApp
-                    const mensajeWa = encodeURIComponent(`🚨 ALERTA TRADING TERMINAL PRO\nActivo: ${simbolo}\nPatrón: Vela de Fuerza Detectada\nSeñal: ${tipoSeñal}\nPrecio actual: ${close}`);
-                    const numTel = document.getElementById('wa-phone').value;
-                    const urlWa = `https://wa.me{numTel}?text=${mensajeWa}`;
-
