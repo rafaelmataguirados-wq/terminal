@@ -1,303 +1,285 @@
-‎<!DOCTYPE html>
-‎<html lang="es">
-‎<head>
-‎    <meta charset="UTF-8">
-‎    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-‎    <title>Terminal de Patrones Ultra-Filtro v4.5</title>
-‎    <!-- Widget Oficial de TradingView -->
-‎    <script type="text/javascript" src="https://tradingview.com"></script>
-‎    <style>
-‎        :root {
-‎            --bg-deep-black: #060608;
-‎            --bg-card-dark: #0e0e12;
-‎            --bg-input-dark: #16161c;
-‎            --red-neon: #ff2a3b;
-‎            --red-dimmed: #851019;
-‎            --border-glow: #1f1f26;
-‎            --text-silver: #e1e1e6;
-‎            --text-muted: #6e6e7a;
-‎            --trading-up: #00e676;
-‎            --trading-down: #ff3d00;
-‎            --trading-warn: #ffea00;
-‎            --whatsapp-green: #25d366;
-‎        }
-‎
-‎        body {
-‎            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-‎            background-color: var(--bg-deep-black);
-‎            color: var(--text-silver);
-‎            margin: 0;
-‎            padding: 15px;
-‎            display: flex;
-‎            justify-content: center;
-‎            align-items: center;
-‎            min-height: 100vh;
-‎            box-sizing: border-box;
-‎        }
-‎
-‎        .terminal-container {
-‎            background-color: var(--bg-card-dark);
-‎            border: 1px solid var(--border-glow);
-‎            border-radius: 12px;
-‎            padding: 25px;
-‎            width: 100%;
-‎            max-width: 800px;
-‎            box-shadow: 0 10px 50px rgba(255, 42, 59, 0.05);
-‎        }
-‎
-‎        .header-box {
-‎            display: flex;
-‎            justify-content: space-between;
-‎            align-items: center;
-‎            border-bottom: 1px solid var(--border-glow);
-‎            padding-bottom: 15px;
-‎            margin-bottom: 20px;
-‎        }
-‎
-‎        h1 {
-‎            color: var(--red-neon);
-‎            font-size: 20px;
-‎            margin: 0;
-‎            text-transform: uppercase;
-‎            letter-spacing: 1px;
-‎            font-weight: 800;
-‎            text-shadow: 0 0 10px rgba(255, 42, 59, 0.2);
-‎        }
-‎
-‎        .timer-badge {
-‎            background: #1c1c24;
-‎            padding: 6px 12px;
-‎            border-radius: 20px;
-‎            font-family: monospace;
-‎            font-size: 13px;
-‎            border: 1px solid var(--red-dimmed);
-‎            color: var(--red-neon);
-‎        }
-‎
-‎        h3 {
-‎            color: var(--text-silver);
-‎            font-size: 12px;
-‎            text-transform: uppercase;
-‎            letter-spacing: 1px;
-‎            border-left: 3px solid var(--red-neon);
-‎            padding-left: 8px;
-‎            margin-top: 20px;
-‎            margin-bottom: 12px;
-‎            display: flex;
-‎            justify-content: space-between;
-‎            align-items: center;
-‎        }
-‎
-‎        .btn-toggle-config {
-‎            background: none;
-‎            border: none;
-‎            color: var(--red-neon);
-‎            font-size: 11px;
-‎            cursor: pointer;
-‎            text-transform: none;
-‎        }
-‎
-‎        .input-row {
-‎            display: flex;
-‎            gap: 12px;
-‎            margin-bottom: 12px;
-‎        }
-‎
-‎        .input-group {
-‎            flex: 1;
-‎            display: flex;
-‎            flex-direction: column;
-‎        }
-‎
-‎        label {
-‎            font-size: 10px;
-‎            color: var(--text-muted);
-‎            text-transform: uppercase;
-‎            margin-bottom: 5px;
-‎            font-weight: 700;
-‎        }
-‎
-‎        input, select {
-‎            background-color: var(--bg-input-dark);
-‎            border: 1px solid var(--border-glow);
-‎            color: #ffffff;
-‎            padding: 10px;
-‎            border-radius: 6px;
-‎            font-size: 13px;
-‎            outline: none;
-‎        }
-‎
-‎        input:focus, select:focus {
-‎            border-color: var(--red-neon);
-‎        }
-‎
-‎        .btn-action {
-‎            width: 100%;
-‎            background-color: var(--red-neon);
-‎            color: #ffffff;
-‎            border: none;
-‎            padding: 14px;
-‎            font-size: 13px;
-‎            font-weight: 800;
-‎            text-transform: uppercase;
-‎            letter-spacing: 1px;
-‎            border-radius: 6px;
-‎            cursor: pointer;
-‎            margin-top: 15px;
-‎            box-shadow: 0 4px 15px rgba(255, 42, 59, 0.15);
-‎        }
-‎
-‎        .btn-action:hover { background-color: var(--red-dimmed); }
-‎
-‎        .console-output {
-‎            margin-top: 20px;
-‎            background-color: #030304;
-‎            border: 1px solid var(--border-glow);
-‎            border-radius: 6px;
-‎            padding: 15px;
-‎            font-family: 'Consolas', monospace;
-‎            font-size: 12px;
-‎            line-height: 1.6;
-‎            min-height: 150px;
-‎            max-height: 250px;
-‎            overflow-y: auto;
-‎            white-space: pre-wrap;
-‎        }
-‎
-‎        .chart-modal {
-‎            margin-top: 20px;
-‎            height: 350px;
-‎            background: #000;
-‎            border-radius: 6px;
-‎            border: 1px solid var(--border-glow);
-‎            display: none;
-‎        }
-‎
-‎        .clickable-token {
-‎            cursor: pointer;
-‎            text-decoration: underline;
-‎        }
-‎
-‎        .btn-wa {
-‎            background-color: var(--whatsapp-green);
-‎            color: black;
-‎            padding: 2px 6px;
-‎            border-radius: 4px;
-‎            font-size: 10px;
-‎            font-weight: bold;
-‎            text-decoration: none;
-‎            margin-left: 10px;
-‎            display: inline-block;
-‎        }
-‎
-‎        .config-section {
-‎            background-color: #0b0b0e;
-‎            border: 1px dashed var(--border-glow);
-‎            padding: 15px;
-‎            border-radius: 6px;
-‎            margin-bottom: 15px;
-‎            display: none;
-‎        }
-‎
-‎        .up-signal { color: var(--trading-up); font-weight: bold; }
-‎        .down-signal { color: var(--trading-down); font-weight: bold; }
-‎        .warn-signal { color: var(--trading-warn); }
-‎        .muted-signal { color: var(--text-muted); }
-‎    </style>
-‎</head>
-‎<body>
-‎
-‎<div class="terminal-container">
-‎    <div class="header-box">
-‎        <h1>🚨 Terminal Pro v4.5</h1>
-‎        <div class="timer-badge" id="candle-timer">Próximo Escaneo: 05:00</div>
-‎    </div>
-‎    
-‎    <h3>🔍 Radar de Activos</h3>
-‎    <div class="input-row">
-‎        <div class="input-group">
-‎            <label for="activo">Criptomonedas de Vigilancia Continua:</label>
-‎            <input type="text" id="activo" value="BTCUSDT, ETHUSDT, SOLUSDT, XRPUSDT, ADAUSDT">
-‎        </div>
-‎    </div>
-‎    <div class="input-row">
-‎        <div class="input-group">
-‎            <label for="temporalidad">Temporalidad:</label>
-‎            <select id="temporalidad" onchange="resetearTemporizador()">
-‎                <option value="5m" selected>5 minutos</option>
-‎                <option value="15m">15 minutos</option>
-‎                <option value="1h">1 hora</option>
-‎            </select>
-‎        </div>
-‎        <div class="input-group">
-‎            <label for="patron-tipo">Algoritmo Cuántico:</label>
-‎            <select id="patron-tipo">
-‎                <option value="original" selected>Vela de Fuerza Tradicional (&gt;70%)</option>
-‎                <option value="envolvente">Vela Envolvente Estándar</option>
-‎            </select>
-‎        </div>
-‎    </div>
-‎
-‎    <h3>
-‎        🔒 Vinculación Permanente Binance 
-‎        <button class="btn-toggle-config" onclick="toggleConfigPanel()">[Mostrar/Ocultar]</button>
-‎    </h3>
-‎    
-‎    <div class="config-section" id="binance-config-panel">
-‎        <div class="input-row">
-‎            <div class="input-group">
-‎                <label for="binance-api">Binance API Key:</label>
-‎                <input type="password" id="binance-api" placeholder="Pega tu API key pública">
-‎            </div>
-‎        </div>
-‎        <div class="input-row">
-‎            <div class="input-group">
-‎                <label for="binance-secret">Binance Secret Key:</label>
-‎                <input type="password" id="binance-secret" placeholder="Pega tu Secret key privada">
-‎            </div>
-‎        </div>
-‎        <button class="btn-action" style="margin-top:5px; padding:8px;" onclick="guardarCredencialesBinance()">Guardar Credenciales en el Teléfono</button>
-‎    </div>
-‎
-‎    <h3>📞 Configuración de Difusión WhatsApp</h3>
-‎    <div class="input-row">
-‎        <div class="input-group">
-‎            <label for="wa-phone">Número de WhatsApp Destino (Opcional - Código de país sin +):</label>
-‎            <input type="text" id="wa-phone" placeholder="Ej: 34600000000 o dejar vacío para elegir chat al enviar">
-‎        </div>
-‎    </div>
-‎
-‎    <button class="btn-action" onclick="ejecutarEscaneoCuantico()">Forzar Escaneo Inmediato</button>
-‎
-‎    <div class="console-output" id="terminal-console">Consola en espera... Las señales detectadas mostrarán un botón para enviarse directo a WhatsApp.</div>
-‎    
-‎    <div class="chart-modal" id="chart-section"></div>
-‎</div>
-‎
-‎<script>
-‎    let tiempoRestante = 300;
-‎    let intervaloTemporizador;
-‎    let audioCtx = null; // Reutilización de la tarjeta de sonido para mejorar rendimiento
-‎
-‎    // Cargar credenciales guardadas automáticamente al abrir la app
-‎    window.onload = function() {
-‎        if(localStorage.getItem('binance_api')) {
-‎            document.getElementById('binance-api').value = localStorage.getItem('binance_api');
-‎        }
-‎        if(localStorage.getItem('binance_secret')) {
-‎            document.getElementById('binance-secret').value = localStorage.getItem('binance_secret');
-‎        }
-‎        if(localStorage.getItem('wa_phone')) {
-‎            document.getElementById('wa-phone').value = localStorage.getItem('wa_phone');
-‎        }
-‎        resetearTemporizador();
-‎        ejecutarEscaneoCuantico();
-‎    };
-‎
-‎    function toggleConfigPanel() {
-‎        const panel = document.getElementById('binance-config-panel');
-‎        panel.style.display = (panel.style.display === "block") ? "none" : "block";
-‎    }
-‎
-‎    function guardarCredencialesBinance() {
-‎
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal de Patrones Ultra-Filtro v4.5</title>
+    <style>
+        :root {
+            --bg-deep-black: #060608;
+            --bg-card-dark: #0e0e12;
+            --bg-input-dark: #16161c;
+            --red-neon: #ff2a3b;
+            --red-dimmed: #851019;
+            --border-glow: #1f1f26;
+            --text-silver: #e1e1e6;
+            --text-muted: #6e6e7a;
+            --trading-up: #00e676;
+            --trading-down: #ff3d00;
+            --trading-warn: #ffea00;
+            --whatsapp-green: #25d366;
+        }
+
+        body {
+            font-family: '-apple-system', BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-deep-black);
+            color: var(--text-silver);
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .terminal-container {
+            background-color: var(--bg-card-dark);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            padding: 25px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 10px 50px rgba(255, 42, 59, 0.05);
+        }
+
+        .header-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-glow);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--red-neon);
+            font-size: 20px;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+            text-shadow: 0 0 10px rgba(255, 42, 59, 0.2);
+        }
+
+        .timer-badge {
+            background: #1c1c24;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 13px;
+            border: 1px solid var(--red-dimmed);
+            color: var(--red-neon);
+        }
+
+        h3 {
+            color: var(--text-silver);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-left: 3px solid var(--red-neon);
+            padding-left: 8px;
+            margin-top: 20px;
+            margin-bottom: 12px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        input, select {
+            background-color: var(--bg-input-dark);
+            border: 1px solid var(--border-glow);
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--red-neon);
+        }
+
+        .btn-action {
+            width: 100%;
+            background-color: var(--red-neon);
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 4px 15px rgba(255, 42, 59, 0.15);
+        }
+
+        .btn-action:hover { background-color: var(--red-dimmed); }
+
+        .console-output {
+            margin-top: 20px;
+            background-color: #030304;
+            border: 1px solid var(--border-glow);
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            min-height: 150px;
+            max-height: 250px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+
+        .btn-wa {
+            background-color: var(--whatsapp-green);
+            color: black;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            text-decoration: none;
+            margin-left: 10px;
+            display: inline-block;
+        }
+
+        .up-signal { color: var(--trading-up); font-weight: bold; }
+        .down-signal { color: var(--trading-down); font-weight: bold; }
+        .warn-signal { color: var(--trading-warn); }
+        .muted-signal { color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+<div class="terminal-container">
+    <div class="header-box">
+        <h1>🚨 Terminal Pro v4.5</h1>
+        <div class="timer-badge" id="candle-timer">Próximo Escaneo: 05:00</div>
+    </div>
+    
+    <h3>🔍 Radar de Activos</h3>
+    <div class="input-row">
+        <div class="input-group">
+            <label for="activo">Criptomonedas de Vigilancia Continua:</label>
+            <input type="text" id="activo" value="BTCUSDT, ETHUSDT, SOLUSDT, XRPUSDT, ADAUSDT">
+        </div>
+    </div>
+    <div class="input-row">
+        <div class="input-group">
+            <label for="temporalidad">Temporalidad:</label>
+            <select id="temporalidad" onchange="resetearTemporizador()">
+                <option value="5m" selected>5 minutos</option>
+                <option value="15m">15 minutos</option>
+                <option value="1h">1 hora</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label for="patron-tipo">Algoritmo Cuántico:</label>
+            <select id="patron-tipo">
+                <option value="original" selected>Vela de Fuerza Tradicional (&gt;70%)</option>
+                <option value="envolvente">Vela Envolvente Estándar</option>
+            </select>
+        </div>
+    </div>
+
+    <h3>📞 Configuración de Difusión WhatsApp</h3>
+    <div class="input-row">
+        <div class="input-group">
+            <label for="wa-phone">Número de WhatsApp Destino (Opcional):</label>
+            <input type="text" id="wa-phone" placeholder="Ej: 34600000000">
+        </div>
+    </div>
+
+    <button class="btn-action" onclick="ejecutarEscaneoCuantico()">Forzar Escaneo Inmediato</button>
+
+    <div class="console-output" id="terminal-console">Consola en espera... Presiona el botón para conectar con el mercado en vivo.</div>
+</div>
+
+<script>
+    let tiempoRestante = 300;
+    let intervaloTemporizador;
+
+    function iniciarTemporizador() {
+        clearInterval(intervaloTemporizador);
+        intervaloTemporizador = setInterval(() => {
+            tiempoRestante--;
+            if (tiempoRestante <= 0) {
+                ejecutarEscaneoCuantico();
+                resetearTemporizador();
+            }
+            actualizarInterfazReloj();
+        }, 1000);
+    }
+
+    function resetearTemporizador() {
+        const temp = document.getElementById('temporalidad').value;
+        if(temp === '5m') tiempoRestante = 300;
+        if(temp === '15m') tiempoRestante = 900;
+        if(temp === '1h') tiempoRestante = 3600;
+        actualizarInterfazReloj();
+    }
+
+    function actualizarInterfazReloj() {
+        const mins = Math.floor(tiempoRestante / 60).toString().padStart(2, '0');
+        const segs = (tiempoRestante % 60).toString().padStart(2, '0');
+        document.getElementById('candle-timer').innerText = `Próximo Escaneo: ${mins}:${segs}`;
+    }
+
+    async function ejecutarEscaneoCuantico() {
+        const consoleEl = document.getElementById('terminal-console');
+        const activos = document.getElementById('activo').value.split(',').map(s => s.trim().toUpperCase());
+        consoleEl.innerHTML = `<span class="warn-signal">[SISTEMA]</span> Conectando a los servidores del mercado en tiempo real...\n`;
+        
+        let resultadosHtml = "";
+
+        for (let simbolo of activos) {
+            try {
+                // Conexión directa a la API pública y gratuita de Binance
+                const respuesta = await fetch(`https://binance.com{simbolo}&interval=${document.getElementById('temporalidad').value}&limit=3`);
+                if (!respuesta.ok) throw new Error();
+                const velas = await respuesta.json();
+                
+                const ultimaVela = velas[velas.length - 1];
+                const open = parseFloat(ultimaVela[1]);
+                const high = parseFloat(ultimaVela[2]);
+                const low = parseFloat(ultimaVela[3]);
+                const close = parseFloat(ultimaVela[4]);
+
+                const cuerpo = Math.abs(close - open);
+                const rangoTotal = high - low;
+                const esVerde = close > open;
+                
+                // Algoritmo de detección del patrón
+                let patronDetectado = false;
+                if (rangoTotal > 0 && (cuerpo / rangoTotal) >= 0.7) {
+                    patronDetectado = true;
+                }
+
+                if (patronDetectado) {
+                    const tipoSeñal = esVerde ? "COMPRA (BULLISH)" : "VENTA (BEARISH)";
+                    const claseSeñal = esVerde ? "up-signal" : "down-signal";
+                    
+                    // Link de envío para WhatsApp
+                    const mensajeWa = encodeURIComponent(`🚨 ALERTA TRADING TERMINAL PRO\nActivo: ${simbolo}\nPatrón: Vela de Fuerza Detectada\nSeñal: ${tipoSeñal}\nPrecio actual: ${close}`);
+                    const numTel = document.getElementById('wa-phone').value;
+                    const urlWa = `https://wa.me{numTel}?text=${mensajeWa}`;
+
